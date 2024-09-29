@@ -1,5 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { MongoClient } from 'mongodb';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 interface Doctor {
   //   id: number;
@@ -42,14 +46,15 @@ function generateDoctorData(count: number): Doctor[] {
 }
 
 async function seedDoctorsToMongoDB(doctors: Doctor[]) {
-  const uri = 'mongodb://localhost:27017'; // Replace with your MongoDB connection string
+  const uri = process.env.MONGO_URL + '/' + process.env.MONGO_DB_NAME; // Replace with your MongoDB connection string
+  console.log(uri);
   const client = new MongoClient(uri);
 
   try {
     await client.connect();
     console.log('Connected to MongoDB');
 
-    const database = client.db('your_database_name'); // Replace with your database name
+    const database = client.db(process.env.MONGO_DB_NAME); // Replace with your database name
     const collection = database.collection('doctors');
 
     const result = await collection.insertMany(doctors);
@@ -63,7 +68,7 @@ async function seedDoctorsToMongoDB(doctors: Doctor[]) {
 }
 
 // Generate 10 doctor records
-const generatedDoctors = generateDoctorData(10);
+const generatedDoctors = generateDoctorData(100);
 
 // Seed the generated doctors to MongoDB
 seedDoctorsToMongoDB(generatedDoctors)

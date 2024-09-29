@@ -8,8 +8,8 @@ node_modules
 /.nyc_output
 
 # Production
-/build
-/dist
+build
+dist
 /dist-ssr
 
 # React

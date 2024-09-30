@@ -9,7 +9,6 @@ const { defaultAlgorithm, darkAlgorithm } = theme;
 function App() {
   const { is_dark_mode, handleThemeChange } = useAppMode();
 
-
   return (
     <ConfigProvider
       theme={{

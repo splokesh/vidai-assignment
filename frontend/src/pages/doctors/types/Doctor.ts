@@ -8,4 +8,6 @@ export interface Doctor {
 	rating: number;
 	phone: string;
 	email: string;
+	createdAt?: Date;
+	updatedAt?: Date;
 }

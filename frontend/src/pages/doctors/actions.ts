@@ -1,12 +1,28 @@
 import {
 	Doctor,
 	DoctorsActionType,
+	SetDoctorsListAction,
 	SetDoctorsAction,
 	SetSearchKeywordAction,
 	SetAppliedFiltersAction,
 	SetLoadingAction,
 	SetErrorAction,
 } from "./types";
+
+export const setDoctorsList = ({
+	doctors,
+	total,
+	page,
+	limit,
+	totalPages,
+}: Omit<SetDoctorsListAction, "type">): SetDoctorsListAction => ({
+	type: DoctorsActionType.SET_DOCTORS_LIST,
+	doctors,
+	total,
+	page,
+	limit,
+	totalPages,
+});
 
 export const setDoctors = (doctors: Doctor[]): SetDoctorsAction => ({
 	type: DoctorsActionType.SET_DOCTORS,

@@ -1,7 +1,8 @@
 import { Button, Card, Rate, theme } from "antd";
 import { Doctor } from "../types";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { useDoctors } from "../context/DoctorsContext";
+import { useDoctors } from "../hooks/useDoctors";
+import { useEffect } from "react";
 
 interface ActionButtonProps {
     icon: React.ReactNode;
@@ -26,8 +27,7 @@ const DoctorCard = ({ doctor, index }: DoctorCardProps) => {
         console.log("Delete");
     };
 
-    const borderWidth = `${index === 0 ? "1" : "0"}px 0px 1px 0px`;
-    return (<Card styles={{ body: { padding: '10px 0px', border: `1px solid ${token.colorBorder}`, borderWidth, borderRadius: 0 } }} bordered={false}>
+    return (<Card styles={{ body: { padding: '10px 0px', border: `1px solid ${token.colorBorder}`, borderWidth: `${index === 0 ? "1" : "0"}px 0px 1px 0px`, borderRadius: 0 } }} bordered={false}>
         <div className="flex flex-row items-center ">
             <div className="w-full">
                 <h3 className="text-xl font-semibold">{doctor.name}</h3>
@@ -62,6 +62,7 @@ const DoctorCard = ({ doctor, index }: DoctorCardProps) => {
 
 const DoctorsList = () => {
     const { doctors } = useDoctors();
+
     return <div>
         {doctors.map((doctor: Doctor, index: number) => <DoctorCard key={doctor._id} doctor={doctor} index={index} />)}
     </div>;

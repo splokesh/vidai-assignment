@@ -1,33 +1,46 @@
-import React, { createContext, useContext, useEffect, ReactNode, useReducer } from 'react';
+import React, { createContext, useEffect, ReactNode, useReducer, useCallback } from 'react';
+import * as qs from 'qs';
 import { DoctorsState, DoctorsAction } from '../types';
 import { doctorsReducer, initialState } from '../reducer';
 import * as actions from '../actions';
+
 export interface DoctorsContextType extends DoctorsState {
     dispatch: React.Dispatch<DoctorsAction>;
 }
 
-const DoctorsContext = createContext<DoctorsContextType | undefined>(undefined);
+export const DoctorsContext = createContext<DoctorsContextType | undefined>(undefined);
 
 export const DoctorsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(doctorsReducer, initialState);
 
-    useEffect(() => {
-        fetchDoctors();
-    }, []);
-
-    const fetchDoctors = async () => {
+    const fetchDoctors = useCallback(async () => {
         try {
             dispatch(actions.setLoading(true));
-            // Replace this with your actual API call
-            const response = await fetch('http://localhost:4000/doctors');
+
+            const queryParams = {
+                page: state.page,
+                limit: state.limit,
+                searchKeyword: state.searchKeyword,
+                specialty: state.specialty,
+                location: state.location,
+            }
+            const response = await fetch('http://localhost:4000/doctors?' + qs.stringify(queryParams));
             const data = await response.json();
-            dispatch(actions.setDoctors(data));
-            dispatch(actions.setLoading(false));
+            dispatch(actions.setDoctorsList({ doctors: data.doctors, total: data.totalCount, page: data.page, limit: data.limit, totalPages: data.totalPages }));
         } catch (err) {
+            console.error(err, "<err<");
             dispatch(actions.setError('Failed to fetch doctors'));
+        } finally {
             dispatch(actions.setLoading(false));
         }
-    };
+    }, [state.page, state.limit, state.searchKeyword, state.specialty, state.location]);
+
+
+    useEffect(() => {
+        fetchDoctors();
+    }, [fetchDoctors]);
+
+
 
     const value = {
         ...state,
@@ -35,12 +48,4 @@ export const DoctorsProvider: React.FC<{ children: ReactNode }> = ({ children })
     };
 
     return <DoctorsContext.Provider value={value}>{children}</DoctorsContext.Provider>;
-};
-
-export const useDoctors = () => {
-    const context = useContext(DoctorsContext);
-    if (context === undefined) {
-        throw new Error('useDoctors must be used within a DoctorsProvider');
-    }
-    return context;
 };
